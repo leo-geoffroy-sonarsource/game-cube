@@ -24,7 +24,7 @@ public class RpsSender {
   public void broadcastStart(Map<String, Session> sessions, QubeGame qubeGame) {
     sessions.forEach((username, session) -> {
 
-      String opponent = qubeGame.getOpponents().stream().filter(o -> !o.equals(username))
+      String opponent = qubeGame.getParticipants().stream().filter(o -> !o.equals(username))
         .findFirst().orElseThrow(() -> {
           throw new IllegalArgumentException("No opponent found");
         });

@@ -8,7 +8,7 @@ public interface QubeGame{
 
   Integer timeout();
 
-  List<String> getOpponents();
+  List<String> getParticipants();
 
   public void addOpponent(String username);
 

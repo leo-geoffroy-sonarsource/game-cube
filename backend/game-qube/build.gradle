@@ -16,6 +16,7 @@ dependencies {
     implementation("io.quarkus:quarkus-jackson")
     implementation 'com.fasterxml:jackson-xml-databind:0.6.2'
     testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'org.assertj:assertj-core:3.11.1'
 }
 
 group 'org.qubee'

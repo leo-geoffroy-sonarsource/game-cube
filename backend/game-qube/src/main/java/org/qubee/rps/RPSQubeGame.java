@@ -3,6 +3,7 @@ package org.qubee.rps;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.qubee.QubeGame;
@@ -27,7 +28,7 @@ public class RPSQubeGame implements QubeGame {
     return GAME_TIMEOUT;
   }
 
-  public List<String> getOpponents() {
+  public List<String> getParticipants() {
 
     return Collections.unmodifiableList(new ArrayList<>(opponents.keySet()));
   }
@@ -45,11 +46,11 @@ public class RPSQubeGame implements QubeGame {
   @Override
   public void registerAction(String username, ActionType actionType) {
     RpsActionType rpsActionType = (RpsActionType) actionType;
-    String opponent = getOpponent(username);
     opponents.get(username).setRpsActionType(rpsActionType);
+    String opponent = getOpponent(username);
     if (opponents.get(opponent).isDefined()) {
       RpsActionType previousAction = opponents.get(opponent).getRpsActionType();
-      findWinner(username, rpsActionType, previousAction, opponent);
+      findWinner();
     }
   }
 
@@ -59,29 +60,45 @@ public class RPSQubeGame implements QubeGame {
       .findFirst().get();
   }
 
-  private void findWinner(String username, RpsActionType rpsActionType, RpsActionType previousAction, String opponent) {
-    if (opponents.get(opponent).isTimeout()!= null && opponents.get(opponent).isTimeout()){
-      if (opponents.get(opponent).isTimeout()!= null && opponents.get(username).isTimeout()){
-        this.resultType = ResultType.TIE;
-      }else{
-        this.resultType = ResultType.WINNER;
-        this.winner = username;
-      }
+  private void findWinner() {
+    Iterator<Map.Entry<String, Status>> opponentIterator = opponents.entrySet().iterator();
+    String opponent1 = opponentIterator.next().getKey();
+    String opponent2 = opponentIterator.next().getKey();
+
+    if (isTimeout(opponent1) && isTimeout(opponent2)){
+      resultType = ResultType.TIE;
+      return;
+    }else if (isTimeout(opponent1)){
+      resultType = ResultType.WINNER;
+      winner = opponent2;
+      return;
+    }else if (isTimeout(opponent2)){
+      resultType = ResultType.WINNER;
+      winner = opponent1;
+      return;
     }
-    if (rpsActionType == previousAction) {
+    if (opponents.get(opponent1).getRpsActionType() == opponents.get(opponent2).getRpsActionType()) {
       this.resultType = ResultType.TIE;
-    } else if (rpsActionType.winAgainst(previousAction)) {
+    } else if (opponents.get(opponent1).getRpsActionType().winAgainst(opponents.get(opponent2).getRpsActionType())) {
       this.resultType = ResultType.WINNER;
-      this.winner = username;
+      this.winner = opponent1;
     } else {
       this.resultType = ResultType.WINNER;
-      this.winner = opponent;
+      this.winner = opponent2;
     }
+  }
+
+  private boolean isTimeout(String opponent1) {
+    return opponents.get(opponent1).isTimeout() != null && opponents.get(opponent1).isTimeout();
   }
 
   @Override
   public void registerTimeout(String username) {
     opponents.get(username).setTimeout(true);
+    String opponent = getOpponent(username);
+    if (opponents.get(opponent).isDefined()) {
+      findWinner();
+    }
   }
 
   @Override
