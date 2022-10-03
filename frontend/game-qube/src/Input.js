@@ -24,7 +24,9 @@ export default function Input() {
 
   return (
     <Container>
-      <Hand outcome={outcome} />
+      <Rotate>
+        <Hand outcome={outcome} />
+      </Rotate>
       <Options>
         <Option type="radio" onClick={() => setOutcome("rock")}>
           ✊
@@ -56,4 +58,8 @@ const Option = styled.div`
   vertical-align: middle;
   line-height: 2;
   margin-right: 25px;
+`;
+
+const Rotate = styled.div`
+  transform: rotate(90deg);
 `;

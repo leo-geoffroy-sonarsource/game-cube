@@ -89,26 +89,28 @@ div.arm {
 }
 
 
-input[id$="scissors"]:checked ~ div #user-hand .finger-1,
-input[id^="scissors"]:checked ~ div #computer-hand .finger-1 {
+
+.scissors .finger-1 {
   width: 130px;
   transform:rotate(-5deg);
 }
-input[id$="scissors"]:checked ~ div #user-hand .finger-2,
-input[id^="scissors"]:checked ~ div #computer-hand .finger-2 {
+
+.scissors .finger-2 {
   width: 130px;
   transform:rotate(5deg);
 }
+
 
 .paper .finger-1,
 .paper .finger-2,
 .paper .finger-3,
 .paper .finger-4 {
-  left: 124px !important; 
-  left: calc(124px + var(--dif))x !important;
+  left: 124px !important;
+  left: calc(124 + var(--dif))px;
   width: 80px !important;
-  border-left: 0x !important;
-  border-radius: 0 20px 20px 0x !important;
+  border-left: none !important;
+  border-top-left-radius: 0 20px;
+  border-bottom-left-radius: 0 20px;
 }
 
 label:nth-of-type(1) { animation-delay: -0.00s; }
