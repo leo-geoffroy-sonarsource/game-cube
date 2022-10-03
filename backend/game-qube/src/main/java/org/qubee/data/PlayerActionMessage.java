@@ -1,4 +1,13 @@
 package org.qubee.data;
 
-public class PlayerActionMessage extends Message{
+public class PlayerActionMessage extends Message {
+  private String action;
+
+  public void setAction(String action) {
+    this.action = action;
+  }
+
+  public String getAction() {
+    return action;
+  }
 }
