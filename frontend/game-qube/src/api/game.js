@@ -13,6 +13,12 @@ function joinMessage() {
   });
 }
 
+function readyMessage() {
+  return JSON.stringify({
+    type: MessageTypes.Ready,
+  });
+}
+
 function playerActionMessage(action) {
   validateAction(action);
   return JSON.stringify({
@@ -38,6 +44,9 @@ function parseServerMessage(payload) {
 
     case MessageTypes.Result:
       return { type, ...parseResultMessage(data) };
+
+    case MessageTypes.Lobby:
+      return { type, ...parseLobbyMessage(data) };
 
     case MessageTypes.Error:
       console.error(data.message);
@@ -65,7 +74,6 @@ function parseStartGameMessage({ opponent, timeout, game }) {
 
 function parseOpponentActionMessage({ action }) {
   validateAction(action);
-
   return { action };
 }
 
@@ -85,6 +93,21 @@ function parseResultMessage({ result, winner }) {
   }
 }
 
+function parseLobbyMessage({ players }) {
+  if (players === undefined || !Array.isArray(players)) {
+    throw new Error(`Expected "players" to be an array`);
+  }
+
+  return {
+    players: players.map(({ username, score }, i) => {
+      if (typeof username !== "string" || typeof score !== "number") {
+        throw new Error(`Unexpected data for player ${i}: username: ${username}, score: ${score}`);
+      }
+      return { username: decodeURIComponent(username), score };
+    }),
+  };
+}
+
 function validateAction(action) {
   switch (gameType) {
     case GameTypes.RockPaperScissors:
@@ -101,6 +124,8 @@ function validateAction(action) {
 export const MessageTypes = {
   Error: "ERROR",
   Join: "JOIN",
+  Ready: "READY",
+  Lobby: "LOBBY",
   Timeout: "TIMEOUT",
   PlayerAction: "PLAYERACTION",
   Start: "START",
@@ -143,6 +168,11 @@ export function terminateGame() {
 export function sendTimeout() {
   console.log("SEND TIMEOUT:", timeoutMessage());
   socket.send(timeoutMessage());
+}
+
+export function sendReady() {
+  console.log("SEND READY:", readyMessage());
+  socket.send(readyMessage());
 }
 
 export function sendPlayerAction(action) {
