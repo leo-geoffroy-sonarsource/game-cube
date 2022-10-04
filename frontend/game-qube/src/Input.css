@@ -1,18 +1,31 @@
 @keyframes changeOrder {
-  from { z-index: 9;}
-  to { z-index: 1; }
+  from {
+    z-index: 9;
+  }
+  to {
+    z-index: 1;
+  }
 }
 
 @keyframes handShake {
-  0%,100% { transform: rotate(10deg); }
-  50% { transform: rotate(-10deg); }
+  0%,
+  100% {
+    transform: rotate(10deg);
+  }
+  50% {
+    transform: rotate(-10deg);
+  }
 }
 
 @keyframes handShake2 {
-  0%,100% { transform: rotateY(180deg) rotate(10deg); }
-  50% { transform: rotateY(180deg) rotate(-10deg); }
+  0%,
+  100% {
+    transform: rotateY(180deg) rotate(10deg);
+  }
+  50% {
+    transform: rotateY(180deg) rotate(-10deg);
+  }
 }
-
 
 #hands {
   text-align: center;
@@ -56,15 +69,30 @@
   transform-origin: 0 50%;
 }
 
-.finger-1 { top: 50px; --dif: 0px; }
-.finger-2 { top: 78px; left: 84px; --dif: 4px; }
-.finger-3 { top: 106px; --dif: 0px; }
-.finger-4 { top: 134px; height: 26px; left: 76px; --dif: -8px; }
+.finger-1 {
+  top: 50px;
+  --dif: 0px;
+}
+.finger-2 {
+  top: 78px;
+  left: 84px;
+  --dif: 4px;
+}
+.finger-3 {
+  top: 106px;
+  --dif: 0px;
+}
+.finger-4 {
+  top: 134px;
+  height: 26px;
+  left: 76px;
+  --dif: -8px;
+}
 
 div.thumb {
   width: 35px;
   height: 70px;
-  
+
   border-radius: 0 20px 20px 20px;
   top: 50px;
   left: 80px;
@@ -88,18 +116,15 @@ div.arm {
   position: relative;
 }
 
-
-
 .SCISSORS .finger-1 {
   width: 130px;
-  transform:rotate(-5deg);
+  transform: rotate(-5deg);
 }
 
 .SCISSORS .finger-2 {
   width: 130px;
-  transform:rotate(5deg);
+  transform: rotate(5deg);
 }
-
 
 .PAPER .finger-1,
 .PAPER .finger-2,
@@ -113,6 +138,23 @@ div.arm {
   border-bottom-left-radius: 0 20px;
 }
 
-label:nth-of-type(1) { animation-delay: -0.00s; }
-label:nth-of-type(2) { animation-delay: -0.15s; }
-label:nth-of-type(3) { animation-delay: -0.30s; }
+.WELL .finger-2,
+.WELL .finger-3,
+.WELL .finger-4 {
+  left: 124px !important;
+  left: calc(124px + var(--dif));
+  width: 80px !important;
+  border-left: none !important;
+  border-top-left-radius: 0 20px;
+  border-bottom-left-radius: 0 20px;
+}
+
+label:nth-of-type(1) {
+  animation-delay: -0s;
+}
+label:nth-of-type(2) {
+  animation-delay: -0.15s;
+}
+label:nth-of-type(3) {
+  animation-delay: -0.3s;
+}

@@ -4,20 +4,23 @@ import { RockPaperScissorsActions } from "./api/game";
 import Hand from "./Hand";
 import "./Input.css";
 
-export default function Input({ userName, userHand, setUserHand }) {
+export default function Input({ userName, userHand, setUserHand, bonus }) {
   const handleKeyUp = (e) => {
-    if (e.keyCode === 82 || e.keyCode === 37) {
+    if (e.key === "ArrowLeft" || e.key === "r") {
       setUserHand(RockPaperScissorsActions.Rock);
-    } else if (e.keyCode === 80 || e.keyCode === 38) {
+    } else if (e.key === "ArrowDown" || e.key === "p") {
       setUserHand(RockPaperScissorsActions.Paper);
-    } else if (e.keyCode === 83 || e.keyCode === 39) {
+    } else if (e.key === "ArrowRight" || e.key === "s") {
       setUserHand(RockPaperScissorsActions.Scissors);
+    } else if (e.key === "ArrowUp" || e.key === "b") {
+      if (bonus === RockPaperScissorsActions.Well) {
+        setUserHand(RockPaperScissorsActions.Well);
+      }
     }
   };
 
   useEffect(() => {
     document.addEventListener("keyup", handleKeyUp);
-
     return () => document.removeEventListener("keyup", handleKeyUp);
   });
 
@@ -31,6 +34,9 @@ export default function Input({ userName, userHand, setUserHand }) {
         <Option onClick={() => setUserHand(RockPaperScissorsActions.Rock)}>✊</Option>
         <Option onClick={() => setUserHand(RockPaperScissorsActions.Paper)}>🖐️</Option>
         <Option onClick={() => setUserHand(RockPaperScissorsActions.Scissors)}>✌️</Option>
+        {bonus === RockPaperScissorsActions.Well && (
+          <Option onClick={() => setUserHand(RockPaperScissorsActions.Well)}>👌</Option>
+        )}
       </Options>
     </Container>
   );

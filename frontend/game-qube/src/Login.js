@@ -6,13 +6,13 @@ export default function Login(props) {
 
   return (
     <Container>
-      <input value={name} onChange={(event) => setName(event.target.value)} />
-      <button
-        onClick={() => {
+      <form
+        onSubmit={() => {
           props.setUserName(name);
         }}>
-        Save
-      </button>
+        <input value={name} onChange={(event) => setName(event.target.value)} />
+        <button type="submit">Save</button>
+      </form>
     </Container>
   );
 }

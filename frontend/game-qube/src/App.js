@@ -5,6 +5,7 @@ import {
   onServerAction,
   onServerConnected,
   registerNewPlayer,
+  RockPaperScissorsActions,
   sendJoin,
   sendPlayerAction,
   sendReady,
@@ -23,6 +24,7 @@ export default class App extends React.Component {
     opponentHand: undefined,
     userName: undefined,
     userHand: undefined,
+    bonus: undefined,
     timerPercentage: 0,
     gameDuration: 5,
     timeOut: false,
@@ -30,15 +32,19 @@ export default class App extends React.Component {
     players: [],
   };
 
+  componentWillUnmount() {
+    terminateGame();
+  }
+
   setUpWebSocket = (userName) => {
     registerNewPlayer(userName);
     onServerAction((data) => {
       switch (data.type) {
         case MessageTypes.Start:
-          this.setState({ opponentName: data.opponent, gameDuration: data.timeout }, () =>
-            this.startTimer()
+          this.setState(
+            { opponentName: data.opponent, gameDuration: data.timeout, bonus: this.getBonus() },
+            () => this.startTimer()
           );
-
           break;
 
         case MessageTypes.PlayerAction:
@@ -90,9 +96,13 @@ export default class App extends React.Component {
     setTimeout(callBack, time);
   };
 
-  componentWillUnmount() {
-    terminateGame();
-  }
+  getBonus = () => {
+    return Math.random() >= 0.9
+      ? Math.random() >= 0.5
+        ? RockPaperScissorsActions.Well
+        : RockPaperScissorsActions.Add1Second
+      : undefined;
+  };
 
   handleTimeOut = () => {
     this.setState({ timeOut: true });
@@ -129,8 +139,16 @@ export default class App extends React.Component {
   };
 
   render() {
-    const { userName, userHand, opponentName, opponentHand, timerPercentage, result, players } =
-      this.state;
+    const {
+      userName,
+      userHand,
+      opponentName,
+      opponentHand,
+      timerPercentage,
+      result,
+      players,
+      bonus,
+    } = this.state;
     if (!userName) {
       return <Login setUserName={this.handleSetUserName} />;
     }
@@ -169,7 +187,12 @@ export default class App extends React.Component {
         ) : (
           <Timer timerPercentage={timerPercentage} />
         )}
-        <Input userName={userName} userHand={userHand} setUserHand={this.handleSetUserHand} />
+        <Input
+          userName={userName}
+          userHand={userHand}
+          setUserHand={this.handleSetUserHand}
+          bonus={bonus}
+        />
       </div>
     );
   }
