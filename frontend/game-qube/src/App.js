@@ -111,11 +111,17 @@ export default class App extends React.Component {
   };
 
   getBonus = () => {
-    return Math.random() >= 0.8
-      ? Math.random() >= 0.5
-        ? RockPaperScissorsActions.Well
-        : RockPaperScissorsActions.Add1Second
-      : undefined;
+    if (Math.random() >= 0.8) {
+      const r = Math.random();
+      if (r <= 0.3) {
+        return RockPaperScissorsActions.Well;
+      }
+      if (r <= 0.6) {
+        return RockPaperScissorsActions.Add1Second;
+      }
+      return RockPaperScissorsActions.MiddleFinger;
+    }
+    return undefined;
   };
 
   handleTimeOut = () => {
@@ -204,12 +210,12 @@ export default class App extends React.Component {
           )}
 
           <Rules>
-            Shortcuts:
+            Keyboard shortcuts:
             <ul>
               <li>r || left -> ✊ Rock </li>
               <li>p || down -> 🖐️ Paper</li>
               <li>s || right -> ✌️ Scissors</li>
-              <li>b || up -> bonus (if applicable)</li>
+              <li>b || up -> Bonus (if applicable)</li>
             </ul>
             <p>Or you can click on the emoji like your grandma would 👵</p>
             <p>/!\ Once played, you CANNOT change it!!</p>
@@ -217,8 +223,8 @@ export default class App extends React.Component {
             <p>80% chance to get a random bonus!</p>
             <ul>
               <li>Well 👌 (beats Rock and Scissors)</li>
-              <li>+1 sec 🕑 (extend timeout by 1 second)</li>
-              <li>MF 🖕 (Coming Soon!)</li>
+              <li>+1s 🕑 (extend timeout by 1 second)</li>
+              <li>MF 🖕 (really?)</li>
               <li>Qubee (Coming Soon!)</li>
             </ul>
           </Rules>

@@ -147,6 +147,7 @@ export const RockPaperScissorsActions = {
   Scissors: "SCISSORS",
   Well: "WELL",
   Add1Second: "PLUS1SECOND",
+  MiddleFinger: "MIDDLEFINGER",
 };
 
 export function registerNewPlayer(username) {

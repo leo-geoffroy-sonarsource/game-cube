@@ -42,9 +42,9 @@ public class GameQubeController {
 
   private final GamesManagement gamesManagement;
   private final SessionManager sessionManager;
-  List<String> waitingRoom = new ArrayList<>();
+  private final List<String> waitingRoom = new ArrayList<>();
 
-  private Map<String, Integer> scores = new HashMap<>();
+  private final Map<String, Integer> scores = new HashMap<>();
 
   ScheduledExecutorService executor = Executors.newScheduledThreadPool(40);
 
@@ -127,14 +127,14 @@ public class GameQubeController {
   @OnError
   public void onError(Session session, @PathParam("username") String username, Throwable throwable) {
     LOG.info(username + " had an error, Error: " + throwable.getMessage());
-    removeUser(username);
+    //removeUser(username);
   }
 
   @OnMessage
   public void onMessage(Session session, String message, @PathParam("username") String username) {
 
     try {
-      LOG.info("Received a message from " + username + " Message: " + message);
+      LOG.info(username+": Received a message -> " + message);
       Message gameMessage = objectMapper.readValue(message, Message.class);
 
       if (gameMessage instanceof PlayerActionMessage playerActionMessage) {
@@ -146,7 +146,7 @@ public class GameQubeController {
           return;
         }
         RpsActionType actionType = RpsActionType.valueOf((playerActionMessage).getAction());
-        rpsSender.broadcastAction(game, username, playerActionMessage);
+        rpsSender.broadcastParticipantAction(game, username, playerActionMessage);
         if (!actionType.isPassThroughOnly()) {
           game.registerAction(username, actionType);
           proceedIfGameIsResolved(game);
@@ -158,7 +158,11 @@ public class GameQubeController {
       } else if (gameMessage instanceof JoinMessage) {
         joinWaitingRoom(username);
       } else if (gameMessage instanceof ReadyMessage) {
-        LOG.info("Starting game for " + waitingRoom.size() + " participants");
+        if (waitingRoom.size() > 1) {
+          LOG.info("Starting game for " + waitingRoom.size() + " participants");
+        } else {
+          reportError("Not enough participants to run a game (" + waitingRoom.size() + ")", username);
+        }
         startGame();
       } else {
         reportError("Unrecognized message format", username);
@@ -177,7 +181,6 @@ public class GameQubeController {
       if (game.getWinner() != null) {
         scores.putIfAbsent(game.getWinner(), 0);
         scores.put(game.getWinner(), scores.get(game.getWinner()) + 1);
-        scores.computeIfPresent(game.getWinner(), (key, val) -> val++);
       }
       gamesManagement.removeGame(game);
     }
