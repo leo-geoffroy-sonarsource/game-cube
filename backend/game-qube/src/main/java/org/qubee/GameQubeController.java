@@ -53,7 +53,6 @@ public class GameQubeController {
 
   @OnOpen
   public void onOpen(Session session, @PathParam("username") String username) {
-
     sessionManager.put(username, session);
     LOG.info(username + " is connecting to the game");
     joinWaitingRoom(username);
@@ -76,6 +75,7 @@ public class GameQubeController {
 
     LOG.info("Adding " + username + " to waiting room");
     waitingRoom.add(username);
+    //rpsSender.broadcastLobby(waitingRoom);
 
     if (waitingRoom.size() == 2) {
       LOG.info("Two players in, starting the game");
@@ -104,25 +104,19 @@ public class GameQubeController {
   }
 
   private void reportError(String message, String username) {
-    LOG.info(message);
+    LOG.error(message);
     rpsSender.sendErrorMessage(username, message);
   }
 
   @OnClose
   public void onClose(Session session, @PathParam("username") String username) {
-    LOG.info(username + " is disconnected, removing from the game");
+    LOG.info(username + " is disconnected, removing from the game and waiting room");
     removeUser(username);
   }
 
   private void removeUser(String username) {
     sessionManager.remove(username);
-    if (sessionManager.isEmpty()) {
-      gamesManagement.findGameByParticipant(username)
-        .ifPresent(g -> {
-          LOG.info(username + " closing game");
-          gamesManagement.removeGame(g);
-        });
-    }
+    waitingRoom.remove(username);
   }
 
   @OnError

@@ -2,12 +2,14 @@ package org.qubee.rps;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.websocket.Session;
 import org.jboss.logging.Logger;
 import org.qubee.QubeGame;
 import org.qubee.SessionManager;
+import org.qubee.data.message.LobbyMessage;
 import org.qubee.data.message.Message;
 import org.qubee.data.message.ErrorMessage;
 import org.qubee.data.message.PlayerActionMessage;
@@ -57,6 +59,17 @@ public class RpsSender {
     sendMessage(username, sessionManager.get(username), message);
   }
 
+  public void broadcastLobby(List<String> users) {
+    LobbyMessage message = new LobbyMessage();
+    users
+        .forEach(e->message.addPlayer(e, 0));
+
+    sessionManager.getSessions().entrySet()
+      .stream()
+      .filter(e -> users.contains(e.getKey()))
+      .forEach(e-> sendMessage(e.getKey(), e.getValue(), message));
+  }
+
   private void sendMessage(String username, Session session, Message message) {
     try {
       session.getAsyncRemote().sendObject(objectMapper.writeValueAsString(message), result -> {
@@ -74,4 +87,6 @@ public class RpsSender {
       .filter(e -> game.getParticipants().contains(e.getKey()))
       .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
   }
+
+
 }

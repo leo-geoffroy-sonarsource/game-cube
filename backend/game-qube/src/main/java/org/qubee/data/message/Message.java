@@ -21,6 +21,7 @@ import org.qubee.data.message.TimeoutMessage;
   @JsonSubTypes.Type(value = ErrorMessage.class, name = "ERROR"),
   @JsonSubTypes.Type(value = JoinMessage.class, name = "JOIN"),
   @JsonSubTypes.Type(value = ReadyMessage.class, name = "READY"),
+  @JsonSubTypes.Type(value = LobbyMessage.class, name = "LOBBY")
 })
 public abstract class Message {
 }
