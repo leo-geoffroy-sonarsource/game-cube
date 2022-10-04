@@ -13,7 +13,10 @@ public enum RpsActionType implements ActionType {
   @JsonProperty("WELL")
   WELL(false),
   @JsonProperty("PLUS1SECOND")
-  PLUS1SECOND(true);
+  PLUS1SECOND(true),
+  @JsonProperty("MIDDLEFINGER")
+  MIDDLEFINGER(false);
+
   private final boolean passThroughOnly;
 
   RpsActionType(boolean passThroughOnly) {
@@ -22,10 +25,10 @@ public enum RpsActionType implements ActionType {
   }
 
   public boolean winAgainst(ActionType actionType) {
-    if (this.equals(WELL) && (actionType.equals(SCISSORS) || actionType.equals(ROCK))) {
-      return true;
+    if (this.equals(actionType)){
+      //We don't win against itself, it's a tie
+      return false;
     }
-
     if (this.equals(ROCK) && actionType.equals(SCISSORS)) {
       return true;
     }
@@ -34,7 +37,16 @@ public enum RpsActionType implements ActionType {
       return true;
     }
 
-    return this.equals(SCISSORS) && actionType.equals(PAPER);
+    if ( this.equals(SCISSORS) && actionType.equals(PAPER)){
+      return true;
+    }
+    if (this.equals(WELL) && (actionType.equals(SCISSORS) || actionType.equals(ROCK))) {
+      return true;
+    }
+    if (this.equals(MIDDLEFINGER)){
+      return false;
+    }
+    return actionType.equals(MIDDLEFINGER);
   }
 
   public boolean isPassThroughOnly() {
