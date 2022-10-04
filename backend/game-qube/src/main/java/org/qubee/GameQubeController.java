@@ -4,7 +4,10 @@ package org.qubee;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -17,6 +20,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import org.apache.commons.collections4.ListUtils;
 import org.jboss.logging.Logger;
 import org.qubee.data.message.Message;
 import org.qubee.data.message.JoinMessage;
@@ -39,6 +43,8 @@ public class GameQubeController {
   private final GamesManagement gamesManagement;
   private final SessionManager sessionManager;
   List<String> waitingRoom = new ArrayList<>();
+
+  private Map<String, Integer> scores = new HashMap<>();
 
   ScheduledExecutorService executor = Executors.newScheduledThreadPool(40);
 
@@ -68,29 +74,27 @@ public class GameQubeController {
       reportError("Username " + username + " is already registered", username);
       return;
     }
-    if (waitingRoom.size() == 2) {
-      reportError("There are already 2 users registered: " + waitingRoom, username);
-      return;
-    }
 
     LOG.info("Adding " + username + " to waiting room");
     waitingRoom.add(username);
-    //rpsSender.broadcastLobby(waitingRoom);
-
-    if (waitingRoom.size() == 2) {
-      LOG.info("Two players in, starting the game");
-      startGame();
-    }
+    rpsSender.broadcastLobby(waitingRoom, scores);
   }
 
   private void startGame() {
-    RPSQubeGame game = new RPSQubeGame();
-    waitingRoom
-      .forEach(game::addParticipant);
-    rpsSender.broadcastStart(game);
-    executor.schedule(getTimeoutTask(game), game.timeout() + 1, TimeUnit.SECONDS);
-    waitingRoom.clear();
-    gamesManagement.addGame(game);
+    List<String> participants = new ArrayList<>(waitingRoom);
+    Collections.shuffle(participants);
+    ListUtils.partition(participants, 2)
+      .forEach(e -> {
+        if (e.size() == 2) {
+          RPSQubeGame game = new RPSQubeGame();
+          e.stream().forEach(game::addParticipant);
+          rpsSender.broadcastStart(game);
+          executor.schedule(getTimeoutTask(game), game.timeout() + 1, TimeUnit.SECONDS);
+          gamesManagement.addGame(game);
+          waitingRoom.removeAll(e);
+        }
+      });
+    rpsSender.broadcastLobby(waitingRoom, scores);
   }
 
   private Runnable getTimeoutTask(RPSQubeGame game) {
@@ -117,6 +121,7 @@ public class GameQubeController {
   private void removeUser(String username) {
     sessionManager.remove(username);
     waitingRoom.remove(username);
+    rpsSender.broadcastLobby(waitingRoom, scores);
   }
 
   @OnError
@@ -134,9 +139,9 @@ public class GameQubeController {
 
       if (gameMessage instanceof PlayerActionMessage playerActionMessage) {
         QubeGame game;
-        try{
+        try {
           game = gamesManagement.findGame(username);
-        }catch (Exception e){
+        } catch (Exception e) {
           reportError("Game does not exist", username);
           return;
         }
@@ -150,6 +155,7 @@ public class GameQubeController {
       } else if (gameMessage instanceof JoinMessage) {
         joinWaitingRoom(username);
       } else if (gameMessage instanceof ReadyMessage) {
+        LOG.info("Starting game for " + waitingRoom.size() + " participants");
         startGame();
       } else {
         reportError("Unrecognized message format", username);
@@ -165,6 +171,12 @@ public class GameQubeController {
   private void proceedIfGameIsResolved(QubeGame game) {
     if (game.getResultType() != null) {
       rpsSender.broadcastResult(game);
+      if (game.getWinner()!= null){
+        scores.putIfAbsent(game.getWinner(), 0);
+        scores.put(game.getWinner(), scores.get(game.getWinner())+1);
+        scores.computeIfPresent(game.getWinner(), (key, val)-> val++);
+      }
+
       gamesManagement.removeGame(game);
     }
   }

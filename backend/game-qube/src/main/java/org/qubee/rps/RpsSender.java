@@ -59,15 +59,15 @@ public class RpsSender {
     sendMessage(username, sessionManager.get(username), message);
   }
 
-  public void broadcastLobby(List<String> users) {
+  public void broadcastLobby(List<String> users, Map<String, Integer> scores) {
     LobbyMessage message = new LobbyMessage();
     users
-        .forEach(e->message.addPlayer(e, 0));
+      .forEach(e -> message.addPlayer(e, scores.getOrDefault(e, 0)));
 
     sessionManager.getSessions().entrySet()
       .stream()
       .filter(e -> users.contains(e.getKey()))
-      .forEach(e-> sendMessage(e.getKey(), e.getValue(), message));
+      .forEach(e -> sendMessage(e.getKey(), e.getValue(), message));
   }
 
   private void sendMessage(String username, Session session, Message message) {
@@ -82,7 +82,7 @@ public class RpsSender {
     }
   }
 
-  private Map<String, Session> filterParticipants( QubeGame game) {
+  private Map<String, Session> filterParticipants(QubeGame game) {
     return sessionManager.getSessions().entrySet().stream()
       .filter(e -> game.getParticipants().contains(e.getKey()))
       .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
