@@ -111,7 +111,7 @@ export default class App extends React.Component {
   };
 
   getBonus = () => {
-    return Math.random() >= 0.9
+    return Math.random() >= 0.8
       ? Math.random() >= 0.5
         ? RockPaperScissorsActions.Well
         : RockPaperScissorsActions.Add1Second

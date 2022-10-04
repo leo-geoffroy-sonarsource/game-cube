@@ -5,7 +5,7 @@ import Hand from "./Hand";
 import "./Input.css";
 
 export default function Input({ userName, userHand, sendAction, bonus }) {
-  const handleKeyUp = (e) => {
+  const handleKeyDown = (e) => {
     if (e.key === "ArrowLeft" || e.key === "r") {
       sendAction(RockPaperScissorsActions.Rock);
     } else if (e.key === "ArrowDown" || e.key === "p") {
@@ -22,8 +22,8 @@ export default function Input({ userName, userHand, sendAction, bonus }) {
   };
 
   useEffect(() => {
-    document.addEventListener("keyup", handleKeyUp);
-    return () => document.removeEventListener("keyup", handleKeyUp);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   });
 
   return (
