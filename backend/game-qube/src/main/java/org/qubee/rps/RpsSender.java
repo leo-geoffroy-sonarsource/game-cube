@@ -39,7 +39,7 @@ public class RpsSender {
     });
   }
 
-  public void broadcastAction(QubeGame qubeGame, String initiator, PlayerActionMessage playerActionMessage) {
+  public void broadcastParticipantAction(QubeGame qubeGame, String initiator, PlayerActionMessage playerActionMessage) {
     filterParticipants(qubeGame).forEach((username, session) -> {
       if (!username.equals(initiator)) {
         sendMessage(username, session, playerActionMessage);
@@ -72,7 +72,9 @@ public class RpsSender {
 
   private void sendMessage(String username, Session session, Message message) {
     try {
-      session.getAsyncRemote().sendObject(objectMapper.writeValueAsString(message), result -> {
+      String messageStr = objectMapper.writeValueAsString(message);
+      LOG.info(username+": Sending message -> "+messageStr);
+      session.getAsyncRemote().sendObject(messageStr, result -> {
         if (result.getException() != null) {
           LOG.info("Unable to send message: " + result.getException());
         }
