@@ -151,7 +151,7 @@ export default class App extends React.Component {
           </p>
 
           {(userName === "Wouter" || userName === "Leo" || userName === "Guillaume") && (
-            <button onClick={this.handleReady()}>Ready!</button>
+            <button onClick={this.handleReady}>Ready!</button>
           )}
         </Container>
       );
