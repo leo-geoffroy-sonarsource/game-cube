@@ -29,6 +29,7 @@ export default class App extends React.Component {
     userName: undefined,
     userHand: undefined,
     bonus: undefined,
+    usedBonus: false,
     timerPercentage: 0,
     gameDuration: 5,
     timeOut: false,
@@ -128,10 +129,11 @@ export default class App extends React.Component {
   };
 
   handleSendAction = (hand) => {
-    const { userHand, timeOut } = this.state;
+    const { userHand, timeOut, usedBonus } = this.state;
     if (userHand === undefined && !timeOut) {
-      if (hand === RockPaperScissorsActions.Add1Second) {
+      if (hand === RockPaperScissorsActions.Add1Second && !usedBonus) {
         this.handleAdd1SecondAction();
+        this.setState({ usedBonus: true });
       } else {
         this.setState({ userHand: hand });
       }
@@ -151,6 +153,8 @@ export default class App extends React.Component {
       opponentName: undefined,
       opponentHand: undefined,
       userHand: undefined,
+      bonus: undefined,
+      usedBonus: false,
       timerPercentage: 0,
       timeOut: false,
     });
