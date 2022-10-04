@@ -13,6 +13,7 @@ export default function Timer({ timerPercentage }) {
 const Container = styled.div`
   display: flex;
   justify-content: center;
+  margin: 30px 0;
 `;
 
 const Bar = styled.div`

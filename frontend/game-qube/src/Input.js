@@ -33,14 +33,28 @@ export default function Input({ userName, userHand, sendAction, bonus }) {
       </Rotate>
       <h2>{userName}</h2>
       <Options>
-        <Option onClick={() => sendAction(RockPaperScissorsActions.Rock)}>✊</Option>
-        <Option onClick={() => sendAction(RockPaperScissorsActions.Paper)}>🖐️</Option>
-        <Option onClick={() => sendAction(RockPaperScissorsActions.Scissors)}>✌️</Option>
+        <Option onClick={() => sendAction(RockPaperScissorsActions.Rock)}>
+          ✊<span>⬅️</span>
+        </Option>
+        <Option onClick={() => sendAction(RockPaperScissorsActions.Paper)}>
+          🖐️
+          <span>⬇️</span>
+        </Option>
+        <Option onClick={() => sendAction(RockPaperScissorsActions.Scissors)}>
+          ✌️
+          <span>➡️</span>
+        </Option>
         {bonus === RockPaperScissorsActions.Well && (
-          <Option onClick={() => sendAction(RockPaperScissorsActions.Well)}>👌</Option>
+          <Option onClick={() => sendAction(RockPaperScissorsActions.Well)}>
+            👌
+            <span>⬆️</span>
+          </Option>
         )}
         {bonus === RockPaperScissorsActions.Add1Second && (
-          <Option onClick={() => sendAction(RockPaperScissorsActions.Add1Second)}>+1</Option>
+          <Option onClick={() => sendAction(RockPaperScissorsActions.Add1Second)}>
+            +1
+            <span>⬆️</span>
+          </Option>
         )}
       </Options>
     </Container>
@@ -59,10 +73,15 @@ const Options = styled.div`
 `;
 
 const Option = styled.div`
-  font-size: 50px;
+  font-size: 40px;
   vertical-align: middle;
-  line-height: 2;
   margin-right: 25px;
+  text-align: center;
+
+  span {
+    display: block;
+    font-size: 20px;
+  }
 `;
 
 const Rotate = styled.div`

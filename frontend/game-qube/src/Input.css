@@ -116,6 +116,13 @@ div.arm {
   position: relative;
 }
 
+#user-hand.SCISSORS,
+#user-hand.PAPER,
+#user-hand.WELL,
+#user-hand.ROCK {
+  left: -20px;
+}
+
 .SCISSORS .finger-1 {
   width: 130px;
   transform: rotate(-5deg);

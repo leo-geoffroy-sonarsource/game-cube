@@ -10,7 +10,11 @@ export default function Login(props) {
         onSubmit={() => {
           props.setUserName(name);
         }}>
-        <input value={name} onChange={(event) => setName(event.target.value)} />
+        <input
+          placeholder="Your username"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+        />
         <button type="submit">Save</button>
       </form>
     </Container>
@@ -18,8 +22,20 @@ export default function Login(props) {
 }
 
 const Container = styled.div`
-  margin-top: 350px;
+  margin-top: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
+
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  input,
+  button {
+    text-align: center;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+  }
 `;

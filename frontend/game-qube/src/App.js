@@ -193,11 +193,16 @@ export default class App extends React.Component {
           <h1>Waiting on Opponents</h1>
           <ol>
             {sortedPlayers.map((player) => (
-              <li>
+              <li key={player.username}>
                 {player.username} (W: {player.score})
               </li>
             ))}
           </ol>
+
+          {(userName === "Wouter" || userName === "Leo" || userName === "Guillaume") && (
+            <button onClick={this.handleReady}>Start Game!</button>
+          )}
+
           <Rules>
             Shortcuts:
             <ul>
@@ -206,21 +211,17 @@ export default class App extends React.Component {
               <li>s || right -> ✌️ Scissors</li>
               <li>b || up -> bonus (if applicable)</li>
             </ul>
-            <p>Or you can click on the emoji like your grandma would ;) </p>
-            <p>/!\ Once played, you CAN NOT change it!!</p>
+            <p>Or you can click on the emoji like your grandma would 👵</p>
+            <p>/!\ Once played, you CANNOT change it!!</p>
             <p>Bonus:</p>
-            <p>1 chance out of 10 to get a random bonus!</p>
+            <p>80% chance to get a random bonus!</p>
             <ul>
-              <li>Well 👌</li>
-              <li>+1 sec 🕑</li>
-              <li>MF 🖕 (WIP)</li>
-              <li>Qube (WIP)</li>
+              <li>Well 👌 (beats Rock and Scissors)</li>
+              <li>+1 sec 🕑 (extend timeout by 1 second)</li>
+              <li>MF 🖕 (Coming Soon!)</li>
+              <li>Qubee (Coming Soon!)</li>
             </ul>
           </Rules>
-
-          {(userName === "Wouter" || userName === "Leo" || userName === "Guillaume") && (
-            <button onClick={this.handleReady}>Ready!</button>
-          )}
         </Container>
       );
     }
@@ -259,6 +260,11 @@ const Container = styled.div`
   }
   h2.TIE {
     color: black;
+  }
+
+  button {
+    margin-top: 20px;
+    padding: 10px 20px;
   }
 `;
 
