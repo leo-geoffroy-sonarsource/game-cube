@@ -87,7 +87,7 @@ public class GameQubeController {
       .forEach(e -> {
         if (e.size() == 2) {
           RPSQubeGame game = new RPSQubeGame();
-          e.stream().forEach(game::addParticipant);
+          e.forEach(game::addParticipant);
           rpsSender.broadcastStart(game);
           executor.schedule(getTimeoutTask(game), game.timeout() + 1, TimeUnit.SECONDS);
           gamesManagement.addGame(game);
@@ -176,7 +176,6 @@ public class GameQubeController {
         scores.put(game.getWinner(), scores.get(game.getWinner())+1);
         scores.computeIfPresent(game.getWinner(), (key, val)-> val++);
       }
-
       gamesManagement.removeGame(game);
     }
   }
