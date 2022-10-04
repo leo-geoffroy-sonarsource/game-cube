@@ -223,7 +223,7 @@ export default class App extends React.Component {
             <p>80% chance to get a random bonus!</p>
             <ul>
               <li>Well 👌 (beats Rock and Scissors)</li>
-              <li>+1 sec 🕑 (extend timeout by 1 second)</li>
+              <li>+1s 🕑 (extend timeout by 1 second)</li>
               <li>MF 🖕 (Really?)</li>
               <li>Qubee (Coming Soon!)</li>
             </ul>

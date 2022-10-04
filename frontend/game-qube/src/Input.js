@@ -54,7 +54,7 @@ export default function Input({ userName, userHand, sendAction, bonus }) {
         )}
         {bonus === RockPaperScissorsActions.Add1Second && (
           <Option onClick={() => sendAction(RockPaperScissorsActions.Add1Second)}>
-            +1
+            🕑
             <span>⬆️</span>
           </Option>
         )}
