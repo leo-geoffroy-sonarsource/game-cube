@@ -7,6 +7,12 @@ function timeoutMessage() {
   });
 }
 
+function joinMessage() {
+  return JSON.stringify({
+    type: MessageTypes.Join,
+  });
+}
+
 function playerActionMessage(action) {
   validateAction(action);
   return JSON.stringify({
@@ -24,14 +30,18 @@ function parseServerMessage(payload) {
   }
 
   switch (type) {
-    case "START":
+    case MessageTypes.Start:
       return { type, ...parseStartGameMessage(data) };
 
-    case "PLAYERACTION":
+    case MessageTypes.PlayerAction:
       return { type, ...parseOpponentActionMessage(data) };
 
-    case "RESULT":
+    case MessageTypes.Result:
       return { type, ...parseResultMessage(data) };
+
+    case MessageTypes.Error:
+      console.error(data.message);
+      return { type, ...data };
 
     default:
       throw new Error(`Unkown message type: ${type}`);
@@ -60,10 +70,6 @@ function parseOpponentActionMessage({ action }) {
 }
 
 function parseResultMessage({ result, winner }) {
-  if (!Object.values(ResultTypes).includes(result)) {
-    throw new Error(`Unkown result: ${result}`);
-  }
-
   switch (result) {
     case ResultTypes.Tie:
       return { result };
@@ -73,8 +79,9 @@ function parseResultMessage({ result, winner }) {
         throw new Error(`Unexpected winner: ${winner}`);
       }
       return { result, winner };
+
     default:
-      return;
+      throw new Error(`Unkown result: ${result}`);
   }
 }
 
@@ -85,12 +92,15 @@ function validateAction(action) {
         throw new Error(`Unkown action: ${action}`);
       }
       break;
+
     default:
-      return;
+      break;
   }
 }
 
 export const MessageTypes = {
+  Error: "ERROR",
+  Join: "JOIN",
   Timeout: "TIMEOUT",
   PlayerAction: "PLAYERACTION",
   Start: "START",
@@ -138,6 +148,11 @@ export function sendTimeout() {
 export function sendPlayerAction(action) {
   console.log("SEND ACTION:", playerActionMessage(action));
   socket.send(playerActionMessage(action));
+}
+
+export function sendJoin() {
+  console.log("SEND TIMEOUT:", joinMessage());
+  socket.send(joinMessage());
 }
 
 export function onServerConnected(cb) {
