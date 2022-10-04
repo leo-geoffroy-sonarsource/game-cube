@@ -5,6 +5,7 @@ import {
   onServerAction,
   onServerConnected,
   registerNewPlayer,
+  sendJoin,
   sendPlayerAction,
   sendTimeout,
   terminateGame,
@@ -111,6 +112,7 @@ export default class App extends React.Component {
       userHand: undefined,
       timerPercentage: 0,
     });
+    sendJoin();
   };
 
   render() {
@@ -120,17 +122,21 @@ export default class App extends React.Component {
     }
 
     if (opponentName === undefined) {
-      return <h2>Waiting on Opponent</h2>;
+      return (
+        <Container>
+          <h2>Waiting on Opponent</h2>
+        </Container>
+      );
     }
 
     return (
       <div className="container">
         <Opponent name={opponentName} hand={opponentHand} />
         {result ? (
-          <Result>
+          <Container>
             <h3>{result}</h3>
             <button onClick={this.handleNext}>Next</button>
-          </Result>
+          </Container>
         ) : (
           <Timer timerPercentage={timerPercentage} />
         )}
@@ -140,7 +146,7 @@ export default class App extends React.Component {
   }
 }
 
-const Result = styled.div`
+const Container = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
