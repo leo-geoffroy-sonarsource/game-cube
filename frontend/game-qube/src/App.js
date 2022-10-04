@@ -19,6 +19,8 @@ import Login from "./Login";
 import Opponent from "./Opponent";
 import Timer from "./Timer";
 
+const TIMEOUT_LOOP = 50;
+
 export default class App extends React.Component {
   state = {
     connected: false,
@@ -59,7 +61,11 @@ export default class App extends React.Component {
           break;
 
         case MessageTypes.PlayerAction:
-          this.setState({ opponentHand: data.action });
+          if (data.action === RockPaperScissorsActions.Add1Second) {
+            this.handleAdd1SecondAction();
+          } else {
+            this.setState({ opponentHand: data.action });
+          }
           break;
 
         case MessageTypes.Result:
@@ -83,8 +89,7 @@ export default class App extends React.Component {
   };
 
   startTimer = () => {
-    const time = 50;
-    const incr = 100 / ((this.state.gameDuration * 1000) / time);
+    const incr = 100 / ((this.state.gameDuration * 1000) / TIMEOUT_LOOP);
 
     const callBack = () => {
       const { timerPercentage, userHand } = this.state;
@@ -93,7 +98,7 @@ export default class App extends React.Component {
         this.setState(
           ({ timerPercentage }) => ({ timerPercentage: timerPercentage + incr }),
           () => {
-            setTimeout(callBack, time);
+            setTimeout(callBack, TIMEOUT_LOOP);
           }
         );
       } else if (userHand === undefined) {
@@ -101,7 +106,7 @@ export default class App extends React.Component {
       }
     };
 
-    setTimeout(callBack, time);
+    setTimeout(callBack, TIMEOUT_LOOP);
   };
 
   getBonus = () => {
@@ -122,12 +127,22 @@ export default class App extends React.Component {
     this.setUpWebSocket(userName);
   };
 
-  handleSetUserHand = (hand) => {
+  handleSendAction = (hand) => {
     const { userHand, timeOut } = this.state;
     if (userHand === undefined && !timeOut) {
-      this.setState({ userHand: hand });
+      if (hand === RockPaperScissorsActions.Add1Second) {
+        this.handleAdd1SecondAction();
+      } else {
+        this.setState({ userHand: hand });
+      }
       sendPlayerAction(hand);
     }
+  };
+
+  handleAdd1SecondAction = () => {
+    this.setState(({ timerPercentage, gameDuration }) => ({
+      timerPercentage: timerPercentage - 100 / gameDuration,
+    }));
   };
 
   handleNext = () => {
@@ -220,7 +235,7 @@ export default class App extends React.Component {
         <Input
           userName={userName}
           userHand={userHand}
-          setUserHand={this.handleSetUserHand}
+          sendAction={this.handleSendAction}
           bonus={bonus}
         />
       </div>
