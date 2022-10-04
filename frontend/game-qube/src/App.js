@@ -154,20 +154,37 @@ export default class App extends React.Component {
     }
 
     if (opponentName === undefined) {
+      const sortedPlayers = players.sort((a, b) => b.score - a.score);
+
       return (
         <Container>
           <h1>Waiting on Opponents</h1>
-          <ul>
-            {players.map((player) => (
+          <ol>
+            {sortedPlayers.map((player) => (
               <li>
-                {player.username} score:{player.score}
+                {player.username} (W: {player.score})
               </li>
             ))}
-          </ul>
-          <p>
-            Rules: r || left -> Rock p || up -> Paper s || right -> Scissors Or you can click on the
-            emoji ;) Once played, you CAN NOT change it!! Bonus may apply randomly....
-          </p>
+          </ol>
+          <Rules>
+            Shortcuts:
+            <ul>
+              <li>r || left -> ✊ Rock </li>
+              <li>p || down -> 🖐️ Paper</li>
+              <li>s || right -> ✌️ Scissors</li>
+              <li>b || up -> bonus (if applicable)</li>
+            </ul>
+            <p>Or you can click on the emoji like your grandma would ;) </p>
+            <p>/!\ Once played, you CAN NOT change it!!</p>
+            <p>Bonus:</p>
+            <p>1 chance out of 10 to get a random bonus!</p>
+            <ul>
+              <li>Well 👌</li>
+              <li>+1 sec 🕑</li>
+              <li>MF 🖕 (WIP)</li>
+              <li>Qube (WIP)</li>
+            </ul>
+          </Rules>
 
           {(userName === "Wouter" || userName === "Leo" || userName === "Guillaume") && (
             <button onClick={this.handleReady}>Ready!</button>
@@ -211,4 +228,12 @@ const Container = styled.div`
   h2.TIE {
     color: black;
   }
+`;
+
+const Rules = styled.div`
+  padding: 20px;
+  margin: 20px;
+  border: 2px solid black;
+  border-radius: 4px;
+  background-color: lightgray;
 `;
