@@ -7,6 +7,7 @@ import {
   registerNewPlayer,
   sendJoin,
   sendPlayerAction,
+  sendReady,
   sendTimeout,
   terminateGame,
 } from "./api/game";
@@ -26,6 +27,7 @@ export default class App extends React.Component {
     gameDuration: 5,
     timeOut: false,
     result: undefined,
+    players: [],
   };
 
   setUpWebSocket = (userName) => {
@@ -33,7 +35,9 @@ export default class App extends React.Component {
     onServerAction((data) => {
       switch (data.type) {
         case MessageTypes.Start:
-          this.setState({ opponentName: data.opponent }, () => this.startTimer());
+          this.setState({ opponentName: data.opponent, gameDuration: data.timeout }, () =>
+            this.startTimer()
+          );
 
           break;
 
@@ -49,6 +53,10 @@ export default class App extends React.Component {
           } else {
             this.setState({ result: "TIE" });
           }
+          break;
+
+        case MessageTypes.Lobby:
+          this.setState({ players: data.players });
           break;
 
         default:
@@ -115,8 +123,13 @@ export default class App extends React.Component {
     sendJoin();
   };
 
+  handleReady = () => {
+    sendReady();
+  };
+
   render() {
-    const { userName, userHand, opponentName, opponentHand, timerPercentage, result } = this.state;
+    const { userName, userHand, opponentName, opponentHand, timerPercentage, result, players } =
+      this.state;
     if (!userName) {
       return <Login setUserName={this.handleSetUserName} />;
     }
@@ -124,7 +137,22 @@ export default class App extends React.Component {
     if (opponentName === undefined) {
       return (
         <Container>
-          <h2>Waiting on Opponent</h2>
+          <h1>Waiting on Opponents</h1>
+          <ul>
+            {players.map((player) => (
+              <li>
+                {player.username} score:{player.score}
+              </li>
+            ))}
+          </ul>
+          <p>
+            Rules: r || left -> Rock p || up -> Paper s || right -> Scissors Or you can click on the
+            emoji ;) Once played, you CAN NOT change it!! Bonus may apply randomly....
+          </p>
+
+          {(userName === "Wouter" || userName === "Leo" || userName === "Guillaume") && (
+            <button onClick={this.handleReady()}>Ready!</button>
+          )}
         </Container>
       );
     }
@@ -134,7 +162,7 @@ export default class App extends React.Component {
         <Opponent name={opponentName} hand={opponentHand} />
         {result ? (
           <Container>
-            <h3>{result}</h3>
+            <h2 className={result}>{result}</h2>
             <button onClick={this.handleNext}>Next</button>
           </Container>
         ) : (
@@ -150,4 +178,13 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
+  h2.WINNER {
+    color: green;
+  }
+  h2.LOSER {
+    color: red;
+  }
+  h2.TIE {
+    color: black;
+  }
 `;
