@@ -190,7 +190,7 @@ export default class App extends React.Component {
 
       return (
         <Container>
-          <h1>Waiting on Opponents</h1>
+          <h1>Waiting for opponents</h1>
           <ol>
             {sortedPlayers.map((player) => (
               <li key={player.username}>
@@ -252,6 +252,8 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
+  margin: 30px 0;
+
   h2.WINNER {
     color: green;
   }
