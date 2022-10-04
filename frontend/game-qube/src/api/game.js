@@ -189,6 +189,10 @@ export function onServerConnected(cb) {
   socket.addEventListener("open", cb);
 }
 
+export function onServerDisconnected(cb) {
+  socket.addEventListener("close", cb);
+}
+
 export function onServerAction(cb) {
   socket.addEventListener("message", ({ data }) => {
     cb(parseServerMessage(data));

@@ -30,7 +30,6 @@ public class RPSQubeGame implements QubeGame {
   }
 
   public List<String> getParticipants() {
-
     return Collections.unmodifiableList(new ArrayList<>(opponents.keySet()));
   }
 
@@ -58,13 +57,13 @@ public class RPSQubeGame implements QubeGame {
     opponents.get(username).setRpsActionType(rpsActionType);
     String opponent = getOpponent(username);
     if (opponents.get(opponent).isDefined()) {
-      RpsActionType previousAction = opponents.get(opponent).getRpsActionType();
       findWinner();
     }
   }
 
   private String getOpponent(String username) {
-    return opponents.entrySet().stream().filter(o -> !o.getKey().equals(username))
+    return opponents.entrySet().stream()
+      .filter(o -> !o.getKey().equals(username))
       .map(o -> o.getKey())
       .findFirst().get();
   }
