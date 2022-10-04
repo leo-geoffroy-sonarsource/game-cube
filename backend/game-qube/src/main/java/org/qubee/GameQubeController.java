@@ -89,7 +89,7 @@ public class GameQubeController {
           RPSQubeGame game = new RPSQubeGame();
           e.forEach(game::addParticipant);
           rpsSender.broadcastStart(game);
-          executor.schedule(getTimeoutTask(game), game.timeout() + 1, TimeUnit.SECONDS);
+          executor.schedule(getTimeoutTask(game), game.timeout() + 4, TimeUnit.SECONDS);
           gamesManagement.addGame(game);
           waitingRoom.removeAll(e);
         }
@@ -145,9 +145,12 @@ public class GameQubeController {
           reportError("Game does not exist", username);
           return;
         }
-        game.registerAction(username, RpsActionType.valueOf((playerActionMessage).getAction()));
+        RpsActionType actionType = RpsActionType.valueOf((playerActionMessage).getAction());
         rpsSender.broadcastAction(game, username, playerActionMessage);
-        proceedIfGameIsResolved(game);
+        if (!actionType.isPassThroughOnly()) {
+          game.registerAction(username, actionType);
+          proceedIfGameIsResolved(game);
+        }
       } else if (gameMessage instanceof TimeoutMessage) {
         QubeGame game = gamesManagement.findGame(username);
         game.registerTimeout(username);
@@ -171,10 +174,10 @@ public class GameQubeController {
   private void proceedIfGameIsResolved(QubeGame game) {
     if (game.getResultType() != null) {
       rpsSender.broadcastResult(game);
-      if (game.getWinner()!= null){
+      if (game.getWinner() != null) {
         scores.putIfAbsent(game.getWinner(), 0);
-        scores.put(game.getWinner(), scores.get(game.getWinner())+1);
-        scores.computeIfPresent(game.getWinner(), (key, val)-> val++);
+        scores.put(game.getWinner(), scores.get(game.getWinner()) + 1);
+        scores.computeIfPresent(game.getWinner(), (key, val) -> val++);
       }
       gamesManagement.removeGame(game);
     }

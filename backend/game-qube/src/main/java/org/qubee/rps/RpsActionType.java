@@ -5,17 +5,24 @@ import org.qubee.data.ActionType;
 
 public enum RpsActionType implements ActionType {
   @JsonProperty("ROCK")
-  ROCK,
+  ROCK(false),
   @JsonProperty("PAPER")
-  PAPER,
+  PAPER(false),
   @JsonProperty("ROCK")
-  SCISSORS,
-
+  SCISSORS(false),
   @JsonProperty("WELL")
-  WELL;
+  WELL(false),
+  @JsonProperty("PLUS1SECOND")
+  PLUS1SECOND(true);
+  private final boolean passThroughOnly;
+
+  RpsActionType(boolean passThroughOnly) {
+
+    this.passThroughOnly = passThroughOnly;
+  }
 
   public boolean winAgainst(ActionType actionType) {
-    if (this.equals(WELL) && (actionType.equals(SCISSORS) || actionType.equals(ROCK))){
+    if (this.equals(WELL) && (actionType.equals(SCISSORS) || actionType.equals(ROCK))) {
       return true;
     }
 
@@ -28,5 +35,9 @@ public enum RpsActionType implements ActionType {
     }
 
     return this.equals(SCISSORS) && actionType.equals(PAPER);
+  }
+
+  public boolean isPassThroughOnly() {
+    return passThroughOnly;
   }
 }
