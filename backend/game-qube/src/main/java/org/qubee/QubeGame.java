@@ -10,6 +10,8 @@ public interface QubeGame{
 
   List<String> getParticipants();
 
+  List<String> getUnresolvedParticipants();
+
   public void addParticipant(String username);
 
   GameType getGameType();

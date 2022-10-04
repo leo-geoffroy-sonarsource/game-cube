@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.websocket.OnClose;
@@ -36,6 +40,9 @@ public class GameQubeController {
   private final Map<String, Session> sessions = new ConcurrentHashMap<>();
   List<String> waitingRoom = new ArrayList<>();
 
+  ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+
   List<QubeGame> games = new ArrayList<>();
 
 
@@ -56,19 +63,15 @@ public class GameQubeController {
   private void joinWaitingRoom(Session session, String username) {
     Optional<QubeGame> existingGame = findGameByParticipant(username);
     if (existingGame.isPresent()) {
-      String message = "Username" + username + " is already in a game";
-      LOG.info(message);
-      rpsSender.sendErrorMessage(username, session, message);
+      reportError("Username" + username + " is already in a game", username, session);
       return;
     }
     if (waitingRoom.contains(username)) {
-      LOG.info("Username is already registered");
-      rpsSender.sendErrorMessage(username, session, "Username " + username + " is already registered");
+      reportError("Username " + username + " is already registered", username, session);
       return;
     }
     if (waitingRoom.size() == 2) {
-      LOG.info("There are already 2 users registered: " + sessions.keySet());
-      rpsSender.sendErrorMessage(username, session, "There are already 2 users registered: " + sessions.keySet());
+      reportError("There are already 2 users registered: " + sessions.keySet(), username, session);
       return;
     }
 
@@ -81,12 +84,31 @@ public class GameQubeController {
       waitingRoom
         .forEach(game::addParticipant);
       rpsSender.broadcastStart(filterParticipants(sessions, game), game);
+      executor.schedule(getTimeoutTask(game), game.timeout() + 1, TimeUnit.SECONDS);
       waitingRoom.clear();
       games.add(game);
     }
   }
 
-  private Map<String, Session> filterParticipants(Map<String, Session> sessions, QubeGame game) {
+  private Runnable getTimeoutTask(RPSQubeGame game) {
+    return () -> {
+      if (game.getResultType() == null) {
+        game.getUnresolvedParticipants()
+          .forEach(game::registerTimeout);
+      }
+      if (game.getResultType() != null) {
+        rpsSender.broadcastResult(filterParticipants(sessions, game), game);
+        games.remove(game);
+      }
+    };
+  }
+
+  private void reportError(String message, String username, Session session) {
+    LOG.info(message);
+    rpsSender.sendErrorMessage(username, session, message);
+  }
+
+  private static Map<String, Session> filterParticipants(Map<String, Session> sessions, QubeGame game) {
     return sessions.entrySet().stream()
       .filter(e -> game.getParticipants().contains(e.getKey()))
       .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
@@ -122,10 +144,10 @@ public class GameQubeController {
       LOG.info("Received a message from " + username + " Message: " + message);
       Message gameMessage = objectMapper.readValue(message, Message.class);
 
-      if (gameMessage instanceof PlayerActionMessage) {
+      if (gameMessage instanceof PlayerActionMessage playerActionMessage) {
         QubeGame game = findGame(session, username);
-        game.registerAction(username, RpsActionType.valueOf(((PlayerActionMessage) gameMessage).getAction()));
-        rpsSender.broadcastAction(filterParticipants(sessions, game), username, (PlayerActionMessage) gameMessage);
+        game.registerAction(username, RpsActionType.valueOf((playerActionMessage).getAction()));
+        rpsSender.broadcastAction(filterParticipants(sessions, game), username, playerActionMessage);
         if (game.getResultType() != null) {
           rpsSender.broadcastResult(filterParticipants(sessions, game), game);
           games.remove(game);
@@ -136,21 +158,19 @@ public class GameQubeController {
       } else if (gameMessage instanceof JoinMessage) {
         joinWaitingRoom(session, username);
       } else {
-        rpsSender.sendErrorMessage(username, session, "Unrecognized message format");
+        reportError("Unrecognized message format", username, session);
       }
     } catch (JsonProcessingException e) {
-      rpsSender.sendErrorMessage(username, session, "Cannot read message " + e.getMessage());
+      reportError("Cannot read message " + e.getMessage(), username, session);
     }
-
   }
 
   private QubeGame findGame(Session session, String username) {
-    QubeGame game = findGameByParticipant(username)
+    return findGameByParticipant(username)
       .orElseThrow(() -> {
         rpsSender.sendErrorMessage(username, session, "Game does not exist");
         throw new IllegalArgumentException("Game does not exist");
       });
-    return game;
   }
 
   private Optional<QubeGame> findGameByParticipant(String username) {
