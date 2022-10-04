@@ -19,6 +19,7 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import org.jboss.logging.Logger;
 import org.qubee.data.Message;
+import org.qubee.data.message.JoinMessage;
 import org.qubee.data.message.PlayerActionMessage;
 import org.qubee.data.message.TimeoutMessage;
 import org.qubee.rps.RPSQubeGame;
@@ -43,22 +44,35 @@ public class GameQubeController {
     this.rpsSender = new RpsSender(objectMapper);
   }
 
+
   @OnOpen
   public void onOpen(Session session, @PathParam("username") String username) {
 
+    sessions.put(username, session);
     LOG.info(username + " is connecting to the game");
+    joinWaitingRoom(session, username);
+  }
+
+  private void joinWaitingRoom(Session session, String username) {
+    Optional<QubeGame> existingGame = findGameByParticipant(username);
+    if (existingGame.isPresent()) {
+      String message = "Username" + username + " is already in a game";
+      LOG.info(message);
+      rpsSender.sendErrorMessage(username, session, message);
+      return;
+    }
     if (waitingRoom.contains(username)) {
       LOG.info("Username is already registered");
       rpsSender.sendErrorMessage(username, session, "Username " + username + " is already registered");
       return;
     }
-    sessions.put(username, session);
     if (waitingRoom.size() == 2) {
       LOG.info("There are already 2 users registered: " + sessions.keySet());
       rpsSender.sendErrorMessage(username, session, "There are already 2 users registered: " + sessions.keySet());
       return;
     }
 
+    LOG.info("Adding " + username + " to waiting room");
     waitingRoom.add(username);
 
     if (waitingRoom.size() == 2) {
@@ -69,7 +83,6 @@ public class GameQubeController {
       rpsSender.broadcastStart(filterParticipants(sessions, game), game);
       waitingRoom.clear();
       games.add(game);
-
     }
   }
 
@@ -104,25 +117,24 @@ public class GameQubeController {
 
   @OnMessage
   public void onMessage(Session session, String message, @PathParam("username") String username) {
-    QubeGame game = findGameByParticipant(username)
-      .orElseThrow(() -> {
-        rpsSender.sendErrorMessage(username, session, "Game does not exist");
-        throw new IllegalArgumentException("Game does not exist");
-      });
+
     try {
       LOG.info("Received a message from " + username + " Message: " + message);
       Message gameMessage = objectMapper.readValue(message, Message.class);
 
       if (gameMessage instanceof PlayerActionMessage) {
+        QubeGame game = findGame(session, username);
         game.registerAction(username, RpsActionType.valueOf(((PlayerActionMessage) gameMessage).getAction()));
         rpsSender.broadcastAction(filterParticipants(sessions, game), username, (PlayerActionMessage) gameMessage);
         if (game.getResultType() != null) {
           rpsSender.broadcastResult(filterParticipants(sessions, game), game);
           games.remove(game);
         }
-
       } else if (gameMessage instanceof TimeoutMessage) {
+        QubeGame game = findGame(session, username);
         game.registerTimeout(username);
+      } else if (gameMessage instanceof JoinMessage) {
+        joinWaitingRoom(session, username);
       } else {
         rpsSender.sendErrorMessage(username, session, "Unrecognized message format");
       }
@@ -130,6 +142,15 @@ public class GameQubeController {
       rpsSender.sendErrorMessage(username, session, "Cannot read message " + e.getMessage());
     }
 
+  }
+
+  private QubeGame findGame(Session session, String username) {
+    QubeGame game = findGameByParticipant(username)
+      .orElseThrow(() -> {
+        rpsSender.sendErrorMessage(username, session, "Game does not exist");
+        throw new IllegalArgumentException("Game does not exist");
+      });
+    return game;
   }
 
   private Optional<QubeGame> findGameByParticipant(String username) {
