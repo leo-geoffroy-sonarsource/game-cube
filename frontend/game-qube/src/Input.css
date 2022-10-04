@@ -156,6 +156,15 @@ div.arm {
   border-bottom-left-radius: 0 20px;
 }
 
+.MIDDLEFINGER .finger-2 {
+  left: 124px !important;
+  left: calc(124px + var(--dif));
+  width: 80px !important;
+  border-left: none !important;
+  border-top-left-radius: 0 20px;
+  border-bottom-left-radius: 0 20px;
+}
+
 label:nth-of-type(1) {
   animation-delay: -0s;
 }
