@@ -4,6 +4,7 @@ import {
   MessageTypes,
   onServerAction,
   onServerConnected,
+  onServerDisconnected,
   registerNewPlayer,
   RockPaperScissorsActions,
   sendJoin,
@@ -20,6 +21,7 @@ import Timer from "./Timer";
 
 export default class App extends React.Component {
   state = {
+    connected: false,
     opponentName: undefined,
     opponentHand: undefined,
     userName: undefined,
@@ -38,6 +40,15 @@ export default class App extends React.Component {
 
   setUpWebSocket = (userName) => {
     registerNewPlayer(userName);
+
+    onServerConnected(() => {
+      this.setState({ connected: true });
+    });
+
+    onServerDisconnected(() => {
+      this.setState({ connected: false });
+    });
+
     onServerAction((data) => {
       switch (data.type) {
         case MessageTypes.Start:
@@ -68,9 +79,6 @@ export default class App extends React.Component {
         default:
           return;
       }
-    });
-    onServerConnected(() => {
-      console.log("Connected!");
     });
   };
 
@@ -141,6 +149,7 @@ export default class App extends React.Component {
   render() {
     const {
       userName,
+      connected,
       userHand,
       opponentName,
       opponentHand,
@@ -151,6 +160,10 @@ export default class App extends React.Component {
     } = this.state;
     if (!userName) {
       return <Login setUserName={this.handleSetUserName} />;
+    }
+
+    if (!connected) {
+      return <Container>Connecting...</Container>;
     }
 
     if (opponentName === undefined) {
