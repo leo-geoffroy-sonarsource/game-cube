@@ -119,6 +119,7 @@ export default class App extends React.Component {
       opponentHand: undefined,
       userHand: undefined,
       timerPercentage: 0,
+      timeOut: false,
     });
     sendJoin();
   };
