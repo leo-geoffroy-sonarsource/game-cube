@@ -9,8 +9,8 @@ public class RPSQubeGameTest {
   @Test
   public void testGameStandard(){
     RPSQubeGame rpsQubeGame = new RPSQubeGame();
-    rpsQubeGame.addOpponent("test1");
-    rpsQubeGame.addOpponent("test2");
+    rpsQubeGame.addParticipant("test1");
+    rpsQubeGame.addParticipant("test2");
 
     rpsQubeGame.registerAction("test1", RpsActionType.ROCK);
     rpsQubeGame.registerAction("test2", RpsActionType.PAPER);
@@ -21,8 +21,8 @@ public class RPSQubeGameTest {
   @Test
   public void testGameTimeout(){
     RPSQubeGame rpsQubeGame = new RPSQubeGame();
-    rpsQubeGame.addOpponent("test1");
-    rpsQubeGame.addOpponent("test2");
+    rpsQubeGame.addParticipant("test1");
+    rpsQubeGame.addParticipant("test2");
 
     rpsQubeGame.registerAction("test1", RpsActionType.ROCK);
     rpsQubeGame.registerTimeout("test2");
@@ -32,8 +32,8 @@ public class RPSQubeGameTest {
   @Test
   public void testGameTimeoutBeforeAction(){
     RPSQubeGame rpsQubeGame = new RPSQubeGame();
-    rpsQubeGame.addOpponent("test1");
-    rpsQubeGame.addOpponent("test2");
+    rpsQubeGame.addParticipant("test1");
+    rpsQubeGame.addParticipant("test2");
 
     rpsQubeGame.registerTimeout("test2");
     rpsQubeGame.registerAction("test1", RpsActionType.ROCK);
@@ -42,8 +42,8 @@ public class RPSQubeGameTest {
   @Test
   public void testGameTie(){
     RPSQubeGame rpsQubeGame = new RPSQubeGame();
-    rpsQubeGame.addOpponent("test1");
-    rpsQubeGame.addOpponent("test2");
+    rpsQubeGame.addParticipant("test1");
+    rpsQubeGame.addParticipant("test2");
 
     rpsQubeGame.registerAction("test1", RpsActionType.ROCK);
     rpsQubeGame.registerAction("test2", RpsActionType.ROCK);

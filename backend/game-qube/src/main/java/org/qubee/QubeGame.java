@@ -10,7 +10,7 @@ public interface QubeGame{
 
   List<String> getParticipants();
 
-  public void addOpponent(String username);
+  public void addParticipant(String username);
 
   GameType getGameType();
 

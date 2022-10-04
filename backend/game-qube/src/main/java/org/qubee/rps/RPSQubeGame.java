@@ -34,7 +34,7 @@ public class RPSQubeGame implements QubeGame {
   }
 
   @Override
-  public void addOpponent(String username) {
+  public void addParticipant(String username) {
     opponents.put(username, new Status());
   }
 
