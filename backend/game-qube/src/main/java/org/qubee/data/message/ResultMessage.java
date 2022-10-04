@@ -1,7 +1,6 @@
 package org.qubee.data.message;
 
 import org.qubee.ResultType;
-import org.qubee.data.Message;
 
 public class ResultMessage extends Message {
   ResultType result;

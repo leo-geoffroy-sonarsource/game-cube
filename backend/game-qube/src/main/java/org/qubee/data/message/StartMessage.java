@@ -1,7 +1,6 @@
 package org.qubee.data.message;
 
 import org.qubee.data.GameType;
-import org.qubee.data.Message;
 
 public class StartMessage extends Message {
   private final String opponent;

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.qubee.QubeGame;
 import org.qubee.ResultType;
 import org.qubee.data.ActionType;
@@ -31,6 +32,14 @@ public class RPSQubeGame implements QubeGame {
   public List<String> getParticipants() {
 
     return Collections.unmodifiableList(new ArrayList<>(opponents.keySet()));
+  }
+
+  @Override
+  public List<String> getUnresolvedParticipants() {
+    return opponents.entrySet().stream()
+      .filter(e -> !e.getValue().isDefined())
+      .map(e -> e.getKey())
+      .collect(Collectors.toList());
   }
 
   @Override
@@ -65,14 +74,14 @@ public class RPSQubeGame implements QubeGame {
     String opponent1 = opponentIterator.next().getKey();
     String opponent2 = opponentIterator.next().getKey();
 
-    if (isTimeout(opponent1) && isTimeout(opponent2)){
+    if (isTimeout(opponent1) && isTimeout(opponent2)) {
       resultType = ResultType.TIE;
       return;
-    }else if (isTimeout(opponent1)){
+    } else if (isTimeout(opponent1)) {
       resultType = ResultType.WINNER;
       winner = opponent2;
       return;
-    }else if (isTimeout(opponent2)){
+    } else if (isTimeout(opponent2)) {
       resultType = ResultType.WINNER;
       winner = opponent1;
       return;
@@ -136,7 +145,7 @@ public class RPSQubeGame implements QubeGame {
       return rpsActionType;
     }
 
-    public boolean isDefined(){
+    public boolean isDefined() {
       return this.timeout != null || this.rpsActionType != null;
     }
   }
