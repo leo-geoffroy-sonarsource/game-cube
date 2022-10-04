@@ -210,12 +210,12 @@ export default class App extends React.Component {
           )}
 
           <Rules>
-            Shortcuts:
+            Keyboard shortcuts:
             <ul>
               <li>r || left -> ✊ Rock </li>
               <li>p || down -> 🖐️ Paper</li>
               <li>s || right -> ✌️ Scissors</li>
-              <li>b || up -> bonus (if applicable)</li>
+              <li>b || up -> Bonus (if applicable)</li>
             </ul>
             <p>Or you can click on the emoji like your grandma would 👵</p>
             <p>/!\ Once played, you CANNOT change it!!</p>
@@ -224,7 +224,7 @@ export default class App extends React.Component {
             <ul>
               <li>Well 👌 (beats Rock and Scissors)</li>
               <li>+1s 🕑 (extend timeout by 1 second)</li>
-              <li>MF 🖕 (Really?)</li>
+              <li>MF 🖕 (really?)</li>
               <li>Qubee (Coming Soon!)</li>
             </ul>
           </Rules>
