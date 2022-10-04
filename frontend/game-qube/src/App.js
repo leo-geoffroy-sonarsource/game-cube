@@ -111,11 +111,17 @@ export default class App extends React.Component {
   };
 
   getBonus = () => {
-    return Math.random() >= 0.8
-      ? Math.random() >= 0.5
-        ? RockPaperScissorsActions.Well
-        : RockPaperScissorsActions.Add1Second
-      : undefined;
+    if (Math.random() >= 0.8) {
+      const r = Math.random();
+      if (r <= 0.3) {
+        return RockPaperScissorsActions.Well;
+      }
+      if (r <= 0.6) {
+        return RockPaperScissorsActions.Add1Second;
+      }
+      return RockPaperScissorsActions.MiddleFinger;
+    }
+    return undefined;
   };
 
   handleTimeOut = () => {
@@ -218,7 +224,7 @@ export default class App extends React.Component {
             <ul>
               <li>Well 👌 (beats Rock and Scissors)</li>
               <li>+1 sec 🕑 (extend timeout by 1 second)</li>
-              <li>MF 🖕 (Coming Soon!)</li>
+              <li>MF 🖕 (Really?)</li>
               <li>Qubee (Coming Soon!)</li>
             </ul>
           </Rules>

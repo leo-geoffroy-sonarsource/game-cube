@@ -17,6 +17,8 @@ export default function Input({ userName, userHand, sendAction, bonus }) {
         sendAction(RockPaperScissorsActions.Well);
       } else if (bonus === RockPaperScissorsActions.Add1Second) {
         sendAction(RockPaperScissorsActions.Add1Second);
+      } else if (bonus === RockPaperScissorsActions.MiddleFinger) {
+        sendAction(RockPaperScissorsActions.MiddleFinger);
       }
     }
   };
@@ -53,6 +55,12 @@ export default function Input({ userName, userHand, sendAction, bonus }) {
         {bonus === RockPaperScissorsActions.Add1Second && (
           <Option onClick={() => sendAction(RockPaperScissorsActions.Add1Second)}>
             +1
+            <span>⬆️</span>
+          </Option>
+        )}
+        {bonus === RockPaperScissorsActions.MiddleFinger && (
+          <Option onClick={() => sendAction(RockPaperScissorsActions.MiddleFinger)}>
+            🖕
             <span>⬆️</span>
           </Option>
         )}
