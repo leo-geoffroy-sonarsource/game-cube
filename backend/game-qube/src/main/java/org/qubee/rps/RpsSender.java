@@ -6,7 +6,7 @@ import java.util.Map;
 import javax.websocket.Session;
 import org.jboss.logging.Logger;
 import org.qubee.QubeGame;
-import org.qubee.data.Message;
+import org.qubee.data.message.Message;
 import org.qubee.data.message.ErrorMessage;
 import org.qubee.data.message.PlayerActionMessage;
 import org.qubee.data.message.ResultMessage;
