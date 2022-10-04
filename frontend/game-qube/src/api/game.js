@@ -50,7 +50,7 @@ function parseStartGameMessage({ opponent, timeout, game }) {
   }
 
   gameType = game;
-  return { opponent, timeout: timeout * 1000, game };
+  return { opponent, timeout, game };
 }
 
 function parseOpponentActionMessage({ action }) {
@@ -73,6 +73,8 @@ function parseResultMessage({ result, winner }) {
         throw new Error(`Unexpected winner: ${winner}`);
       }
       return { result, winner };
+    default:
+      return;
   }
 }
 
@@ -83,6 +85,8 @@ function validateAction(action) {
         throw new Error(`Unkown action: ${action}`);
       }
       break;
+    default:
+      return;
   }
 }
 

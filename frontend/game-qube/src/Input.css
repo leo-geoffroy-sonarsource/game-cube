@@ -90,23 +90,23 @@ div.arm {
 
 
 
-.scissors .finger-1 {
+.SCISSORS .finger-1 {
   width: 130px;
   transform:rotate(-5deg);
 }
 
-.scissors .finger-2 {
+.SCISSORS .finger-2 {
   width: 130px;
   transform:rotate(5deg);
 }
 
 
-.paper .finger-1,
-.paper .finger-2,
-.paper .finger-3,
-.paper .finger-4 {
+.PAPER .finger-1,
+.PAPER .finger-2,
+.PAPER .finger-3,
+.PAPER .finger-4 {
   left: 124px !important;
-  left: calc(124 + var(--dif))px;
+  left: calc(124px + var(--dif));
   width: 80px !important;
   border-left: none !important;
   border-top-left-radius: 0 20px;

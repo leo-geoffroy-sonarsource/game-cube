@@ -1,15 +1,10 @@
-import { useState } from "react";
 import styled from "styled-components";
 
-export default function Timer() {
-  const [percent, setPercent] = useState(0);
-
-  setTimeout(() => (percent === 100 ? clearTimeout(100) : setPercent(percent + 1)), 100);
-
+export default function Timer({ timerPercentage }) {
   return (
     <Container>
       <Bar>
-        <Progress percent={percent} />
+        <Progress percent={timerPercentage} />
       </Bar>
     </Container>
   );

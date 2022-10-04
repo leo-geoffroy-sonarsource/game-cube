@@ -1,11 +1,12 @@
 import styled from "styled-components";
 import Hand from "./Hand";
 
-export default function Opponent() {
+export default function Opponent({ name, hand }) {
   return (
     <Container>
+      <h2>{name}</h2>
       <Rotate>
-        <Hand />
+        <Hand outcome={hand} />
       </Rotate>
     </Container>
   );
@@ -14,6 +15,8 @@ export default function Opponent() {
 const Container = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
+  flex-direction: column;
 `;
 
 const Rotate = styled.div`

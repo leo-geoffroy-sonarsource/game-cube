@@ -1,5 +1,4 @@
 export default function Hand({ outcome = "hand" }) {
-  console.log(outcome);
   let className = outcome;
   if (outcome !== "hand") {
     className += " hand done";

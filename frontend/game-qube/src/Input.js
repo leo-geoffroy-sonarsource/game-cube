@@ -1,42 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
+import { RockPaperScissorsActions } from "./api/game";
 import Hand from "./Hand";
 import "./Input.css";
 
-export default function Input() {
-  const [outcome, setOutcome] = useState("hand");
-
-  const handleKeyDown = (e) => {
+export default function Input({ userName, userHand, setUserHand }) {
+  const handleKeyUp = (e) => {
     if (e.keyCode === 82 || e.keyCode === 37) {
-      setOutcome("rock");
+      setUserHand(RockPaperScissorsActions.Rock);
     } else if (e.keyCode === 80 || e.keyCode === 38) {
-      setOutcome("paper");
+      setUserHand(RockPaperScissorsActions.Paper);
     } else if (e.keyCode === 83 || e.keyCode === 39) {
-      setOutcome("scissors");
+      setUserHand(RockPaperScissorsActions.Scissors);
     }
   };
 
   useEffect(() => {
-    document.addEventListener("keyup", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
 
-    return () => document.removeEventListener("keyup", handleKeyDown);
+    return () => document.removeEventListener("keyup", handleKeyUp);
   });
 
   return (
     <Container>
       <Rotate>
-        <Hand outcome={outcome} />
+        <Hand outcome={userHand} />
       </Rotate>
+      <h2>{userName}</h2>
       <Options>
-        <Option type="radio" onClick={() => setOutcome("rock")}>
-          ✊
-        </Option>
-        <Option type="radio" onClick={() => setOutcome("paper")}>
-          🖐️
-        </Option>
-        <Option type="radio" onClick={() => setOutcome("scissors")}>
-          ✌️
-        </Option>
+        <Option onClick={() => setUserHand(RockPaperScissorsActions.Rock)}>✊</Option>
+        <Option onClick={() => setUserHand(RockPaperScissorsActions.Paper)}>🖐️</Option>
+        <Option onClick={() => setUserHand(RockPaperScissorsActions.Scissors)}>✌️</Option>
       </Options>
     </Container>
   );
