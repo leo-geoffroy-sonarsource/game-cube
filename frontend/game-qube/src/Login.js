@@ -18,5 +18,8 @@ export default function Login(props) {
 }
 
 const Container = styled.div`
+  margin-top: 350px;
   display: flex;
+  justify-content: center;
+  align-items: center;
 `;

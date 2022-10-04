@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "styled-components";
 import {
   MessageTypes,
   onServerAction,
@@ -23,6 +24,7 @@ export default class App extends React.Component {
     timerPercentage: 0,
     gameDuration: 5,
     timeOut: false,
+    result: undefined,
   };
 
   setUpWebSocket = (userName) => {
@@ -30,7 +32,8 @@ export default class App extends React.Component {
     onServerAction((data) => {
       switch (data.type) {
         case MessageTypes.Start:
-          this.setState({ opponentName: data.opponent });
+          this.setState({ opponentName: data.opponent }, () => this.startTimer());
+
           break;
 
         case MessageTypes.PlayerAction:
@@ -38,6 +41,13 @@ export default class App extends React.Component {
           break;
 
         case MessageTypes.Result:
+          if (data.winner === this.state.userName) {
+            this.setState({ result: "WINNER" });
+          } else if (data.winner === this.state.opponentName) {
+            this.setState({ result: "LOSER" });
+          } else {
+            this.setState({ result: "TIE" });
+          }
           break;
 
         default:
@@ -47,7 +57,6 @@ export default class App extends React.Component {
     onServerConnected(() => {
       console.log("Connected!");
     });
-    this.startTimer();
   };
 
   startTimer = () => {
@@ -94,18 +103,45 @@ export default class App extends React.Component {
     }
   };
 
+  handleNext = () => {
+    this.setState({
+      result: undefined,
+      opponentName: undefined,
+      opponentHand: undefined,
+      userHand: undefined,
+      timerPercentage: 0,
+    });
+  };
+
   render() {
-    const { userName, userHand, opponentName, opponentHand, timerPercentage } = this.state;
+    const { userName, userHand, opponentName, opponentHand, timerPercentage, result } = this.state;
     if (!userName) {
       return <Login setUserName={this.handleSetUserName} />;
+    }
+
+    if (opponentName === undefined) {
+      return <h2>Waiting on Opponent</h2>;
     }
 
     return (
       <div className="container">
         <Opponent name={opponentName} hand={opponentHand} />
-        <Timer timerPercentage={timerPercentage} />
+        {result ? (
+          <Result>
+            <h3>{result}</h3>
+            <button onClick={this.handleNext}>Next</button>
+          </Result>
+        ) : (
+          <Timer timerPercentage={timerPercentage} />
+        )}
         <Input userName={userName} userHand={userHand} setUserHand={this.handleSetUserHand} />
       </div>
     );
   }
 }
+
+const Result = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+`;
