@@ -218,7 +218,7 @@ export default class App extends React.Component {
               <li>b || up -> Bonus (if applicable)</li>
             </ul>
             <p>Or you can click on the emoji like your grandma would 👵</p>
-            <p>/!\ Once played, you CANNOT change it!!</p>
+            <p>⚠️ Once played, you CANNOT change it!! ⚠️</p>
             <p>Bonus:</p>
             <p>80% chance to get a random bonus!</p>
             <ul>
