@@ -60,7 +60,7 @@ function parseStartGameMessage({ opponent, timeout, game }) {
   }
 
   gameType = game;
-  return { opponent, timeout, game };
+  return { opponent: decodeURIComponent(opponent), timeout, game };
 }
 
 function parseOpponentActionMessage({ action }) {
@@ -78,7 +78,7 @@ function parseResultMessage({ result, winner }) {
       if (typeof winner !== "string") {
         throw new Error(`Unexpected winner: ${winner}`);
       }
-      return { result, winner };
+      return { result, winner: decodeURIComponent(winner) };
 
     default:
       throw new Error(`Unkown result: ${result}`);
