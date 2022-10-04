@@ -151,7 +151,7 @@ export function sendPlayerAction(action) {
 }
 
 export function sendJoin() {
-  console.log("SEND TIMEOUT:", joinMessage());
+  console.log("SEND JOIN:", joinMessage());
   socket.send(joinMessage());
 }
 
