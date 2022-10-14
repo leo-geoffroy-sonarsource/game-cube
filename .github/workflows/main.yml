@@ -1,13 +1,12 @@
 on:
   workflow_dispatch:
   push:
-env:
-  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Build and deploy
     timeout-minutes: 60
+    environment: normal
     steps:
     - name: Checkout the code
       uses: actions/checkout@master
@@ -22,3 +21,5 @@ jobs:
     - name: Deploy to Fly.io 
       uses: superfly/flyctl-actions/setup-flyctl@master
     - run: flyctl deploy --remote-only
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
