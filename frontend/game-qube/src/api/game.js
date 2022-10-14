@@ -155,7 +155,7 @@ export function registerNewPlayer(username) {
     throw new Error("There is already an active connection");
   }
 
-  let url = window.location.host+"/game-qube";
+  let url = window.location.host+"/game-qube/participate";
   socket = new WebSocket(`ws:///${url}/${username}`);
 }
 

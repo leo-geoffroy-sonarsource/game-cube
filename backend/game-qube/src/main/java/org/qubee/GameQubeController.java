@@ -5,9 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -22,8 +20,8 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import org.apache.commons.collections4.ListUtils;
 import org.jboss.logging.Logger;
-import org.qubee.data.message.Message;
 import org.qubee.data.message.JoinMessage;
+import org.qubee.data.message.Message;
 import org.qubee.data.message.PlayerActionMessage;
 import org.qubee.data.message.ReadyMessage;
 import org.qubee.data.message.TimeoutMessage;
@@ -32,7 +30,7 @@ import org.qubee.rps.RPSQubeGame;
 import org.qubee.rps.RpsActionType;
 import org.qubee.rps.RpsSender;
 
-@ServerEndpoint("/game-qube/{username}")
+@ServerEndpoint("/game-qube/participate/{username}")
 @ApplicationScoped
 public class GameQubeController {
   private static final Logger LOG = Logger.getLogger(GameQubeController.class);
@@ -44,18 +42,16 @@ public class GameQubeController {
   private final SessionManager sessionManager;
   private final List<String> waitingRoom = new ArrayList<>();
 
-  private final Map<String, Integer> scores = new HashMap<>();
 
   ScheduledExecutorService executor = Executors.newScheduledThreadPool(40);
 
 
-  public GameQubeController(ObjectMapper objectMapper) {
+  public GameQubeController(ObjectMapper objectMapper, GamesManagement gamesManagement) {
     this.objectMapper = objectMapper;
-    this.gamesManagement = new GamesManagement();
+    this.gamesManagement = gamesManagement;
     this.sessionManager = new SessionManager();
     this.rpsSender = new RpsSender(sessionManager, objectMapper);
   }
-
 
   @OnOpen
   public void onOpen(Session session, @PathParam("username") String username) {
@@ -77,7 +73,7 @@ public class GameQubeController {
 
     LOG.info("Adding " + username + " to waiting room");
     waitingRoom.add(username);
-    rpsSender.broadcastLobby(waitingRoom, scores);
+    rpsSender.broadcastLobby(waitingRoom, gamesManagement.getScores());
   }
 
   private void startGame() {
@@ -94,7 +90,7 @@ public class GameQubeController {
           waitingRoom.removeAll(e);
         }
       });
-    rpsSender.broadcastLobby(waitingRoom, scores);
+    rpsSender.broadcastLobby(waitingRoom, gamesManagement.getScores());
   }
 
   private Runnable getTimeoutTask(RPSQubeGame game) {
@@ -121,7 +117,7 @@ public class GameQubeController {
   private void removeUser(String username) {
     sessionManager.remove(username);
     waitingRoom.remove(username);
-    rpsSender.broadcastLobby(waitingRoom, scores);
+    rpsSender.broadcastLobby(waitingRoom, gamesManagement.getScores());
   }
 
   @OnError
@@ -134,7 +130,7 @@ public class GameQubeController {
   public void onMessage(Session session, String message, @PathParam("username") String username) {
 
     try {
-      LOG.info(username+": Received a message -> " + message);
+      LOG.info(username + ": Received a message -> " + message);
       Message gameMessage = objectMapper.readValue(message, Message.class);
 
       if (gameMessage instanceof PlayerActionMessage playerActionMessage) {
@@ -179,8 +175,7 @@ public class GameQubeController {
     if (game.getResultType() != null) {
       rpsSender.broadcastResult(game);
       if (game.getWinner() != null) {
-        scores.putIfAbsent(game.getWinner(), 0);
-        scores.put(game.getWinner(), scores.get(game.getWinner()) + 1);
+        gamesManagement.incrementScore(game.getWinner());
       }
       gamesManagement.removeGame(game);
     }
