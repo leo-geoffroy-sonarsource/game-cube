@@ -1,0 +1,14 @@
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: BUild and deploy
+    timeout-minutes: 60
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@master
+    - name: Build native image
+      working-directory: ./backend/game-qube
+      run: ./gradlew build -Dquarkus.package.type=native
