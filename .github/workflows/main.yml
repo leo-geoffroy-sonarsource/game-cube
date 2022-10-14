@@ -4,11 +4,19 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    name: BUild and deploy
+    name: Build and deploy
     timeout-minutes: 60
     steps:
     - name: Checkout the code
       uses: actions/checkout@master
-    - name: Build native image
-      working-directory: ./backend/game-qube
-      run: ./gradlew build -Dquarkus.package.type=native
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'adopt'
+    - name: Validate Gradle wrapper
+      uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
+    - name: Build with Gradle
+      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+      with:
+        arguments: build -Dquarkus.package.type=native
