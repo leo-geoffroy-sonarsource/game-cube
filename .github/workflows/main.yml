@@ -31,4 +31,6 @@ jobs:
       with:
         arguments: build -Dquarkus.package.type=native
         build-root-directory: ./backend/game-qube
-        
+    - name: Deploy to Fly.io 
+      uses: superfly/flyctl-actions/setup-flyctl@master
+    - run: flyctl deploy --remote-only        
