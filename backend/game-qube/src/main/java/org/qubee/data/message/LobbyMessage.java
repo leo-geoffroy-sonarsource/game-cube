@@ -1,8 +1,10 @@
 package org.qubee.data.message;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import java.util.ArrayList;
 import java.util.List;
 
+@RegisterForReflection
 public class LobbyMessage extends Message {
   List<PlayerWithScore> players = new ArrayList<>();
 

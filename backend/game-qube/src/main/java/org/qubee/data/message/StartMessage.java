@@ -1,7 +1,9 @@
 package org.qubee.data.message;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.qubee.data.GameType;
 
+@RegisterForReflection
 public class StartMessage extends Message {
   private final String opponent;
 

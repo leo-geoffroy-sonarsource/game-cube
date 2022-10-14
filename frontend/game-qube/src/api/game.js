@@ -155,7 +155,9 @@ export function registerNewPlayer(username) {
     throw new Error("There is already an active connection");
   }
 
-  socket = new WebSocket(`ws://leog.eu.ngrok.io/game-qube/${username}`);
+  let url = window.location.host+"/game-qube";
+  socket = new WebSocket(`ws:///${url}/${username}`);
+cd
 }
 
 export function terminateGame() {

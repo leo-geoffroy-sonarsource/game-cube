@@ -2,7 +2,9 @@ package org.qubee.data.message;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
 @JsonTypeInfo(
   use = JsonTypeInfo.Id.NAME,
   include = JsonTypeInfo.As.PROPERTY,

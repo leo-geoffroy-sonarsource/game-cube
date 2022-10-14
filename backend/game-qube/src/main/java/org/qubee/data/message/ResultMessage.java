@@ -1,7 +1,9 @@
 package org.qubee.data.message;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.qubee.ResultType;
 
+@RegisterForReflection
 public class ResultMessage extends Message {
   ResultType result;
   String winner;

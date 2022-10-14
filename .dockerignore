@@ -1,0 +1,7 @@
+# Ignore everything
+*
+!/frontend/game-qube/build
+!/backend/game-qube/build/game-qube-1.0.0-SNAPSHOT-runner
+!/Dockerfile
+!/nginx.conf
+!/supervisord.conf
