@@ -157,7 +157,6 @@ export function registerNewPlayer(username) {
 
   let url = window.location.host+"/game-qube";
   socket = new WebSocket(`ws:///${url}/${username}`);
-cd
 }
 
 export function terminateGame() {
