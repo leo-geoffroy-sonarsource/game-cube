@@ -1,6 +1,8 @@
 plugins {
     id 'java'
     id 'io.quarkus'
+    id "org.sonarqube" version "4.2.1.3168"
+
 }
 
 repositories {
@@ -35,4 +37,12 @@ compileJava {
 
 compileTestJava {
     options.encoding = 'UTF-8'
+}
+
+sonar {
+  properties {
+    property "sonar.projectKey", "leo-geoffroy-sonarsource_game-qube"
+    property "sonar.organization", "leo-geoffroy-sonarsource"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
 }
